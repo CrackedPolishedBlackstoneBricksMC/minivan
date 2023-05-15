@@ -6,6 +6,10 @@ Bare-minimum `afterEvaluate` Gradle plugin for putting vanilla Minecraft on the 
 
 The intended audience is people writing [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template) -style mods. `minivan` may be useful as a drop-in replacement for VanillaGradle in your `Common`/`Xplat` subproject.
 
+# License
+
+MIT
+
 ## Usage
 
 See `demo`.
@@ -25,7 +29,7 @@ buildscript {
 apply plugin: "java"
 apply plugin: "agency.highlysuspect.minivan"
 
-minecraft {
+minivan {
 	version("1.18.2")
 }
 ```
@@ -34,6 +38,8 @@ minecraft {
 
 * Swap the plugin invocation to `agency.highlysuspect:minivan:0.1`.
 * Change `minecraft {` to `minivan {`.
+
+Currently the *only* supported function inside the `minivan` block is `version`, and *no* Gradle tasks are added.
 
 # things that this plugin glues together
 
@@ -47,7 +53,6 @@ Much of the code has been copied from [voldeloom](https://github.com/CrackedPoli
 
 # todo
 
-* include Stitch and Lorenz redistribution notice
 * that stuff i commented out in JarMergerCooler in voldeloom might need to be brought back lol (⛄)
 * Parchment stuff:
   * param-name mappings
