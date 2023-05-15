@@ -1,0 +1,17 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "https://maven.fabricmc.net/" }
+		//maven { url "https://repo.sleeping.town/" } //commented out
+	}
+	dependencies {
+		classpath "agency.highlysuspect:minivan:0.1-SNAPSHOT"
+	}
+}
+
+apply plugin: "java"
+apply plugin: "agency.highlysuspect.minivan"
+
+minivan {
+	version("1.19.4")
+}

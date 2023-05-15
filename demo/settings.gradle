@@ -1,0 +1,3 @@
+rootProject.name = "minivan-demo"
+
+includeBuild("../") //Remove this line when creating your own project

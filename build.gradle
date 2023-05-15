@@ -1,0 +1,77 @@
+plugins {
+	id "java"
+	id "java-gradle-plugin"
+	id "maven-publish"
+}
+
+//for now, stick to Java 8
+sourceCompatibility = targetCompatibility = "1.8"
+
+repositories {
+	maven {
+		name = "fabric"
+		url = "https://maven.fabricmc.net/"
+		mavenContent {
+			includeGroup "net.fabricmc"
+			includeGroup "org.jetbrains" //fabricflower
+		}
+	}
+	mavenCentral()
+}
+
+dependencies {
+	implementation gradleApi()
+	
+	//java staples
+	compileOnly "org.jetbrains:annotations:24.0.1"
+	implementation "com.google.code.gson:gson:2.8.5"
+	
+	//bytecode
+	implementation "org.ow2.asm:asm:9.1"
+	implementation "org.ow2.asm:asm-commons:9.1"
+	implementation "org.ow2.asm:asm-tree:9.1"
+	
+	//mappings
+	implementation "net.fabricmc:tiny-mappings-parser:0.3.0+build.17" // ?
+	implementation ("net.fabricmc:tiny-remapper:0.8.6") { transitive = false }
+	implementation "org.cadixdev:lorenz:0.5.7"
+	implementation "org.cadixdev:lorenz-io-proguard:0.5.7"
+	
+	//decompilers
+	implementation "org.jetbrains:intellij-fernflower:1.2.1.16"
+}
+
+gradlePlugin {
+	plugins {
+		"${name}" {
+			id = "${group}.${name}"
+			implementationClass = "agency.highlysuspect.minivan.MinivanPlugin"
+		}
+	}
+}
+
+publishing {
+	publications {
+		plugin(MavenPublication) { publication ->
+			groupId project.group
+			artifactId project.archivesBaseName
+			version project.version
+			
+			from components["java"]
+		}
+	}
+	repositories {
+		if (project.hasProperty("publish-username")) {
+			maven {
+				url "https://repo-api.sleeping.town/"
+				credentials {
+					username project.hasProperty("publish-username") ? project.getProperty("publish-username") : null
+					password project.hasProperty("publish-password") ? project.getProperty("publish-password") : null
+				}
+			}
+		}
+		maven {
+			url file("build/maven").toURI().toString()
+		}
+	}
+}
