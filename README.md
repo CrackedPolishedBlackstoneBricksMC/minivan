@@ -4,13 +4,13 @@ Bare-minimum `afterEvaluate` Gradle plugin for putting vanilla Minecraft on the 
 
 `minivan` is much smaller and much less feature-rich than [VanillaGradle](https://github.com/SpongePowered/VanillaGradle/) (hence the name). `minivan` makes *no* attempt to provide "run configs", reobfuscation, asset downloading, `genSources`/`decompile`, access widening, good error messages...
 
-The intended audience is people writing [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template) -style mods. `minivan` may be useful as a drop-in replacement for VanillaGradle in your `Common`/`Xplat` subproject.
+The intended audience is people writing [jaredlll08/MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template) -style mods and just want something to back the `Common`/`Xplat` subproject.
 
 # License
 
 MIT
 
-## Usage
+# Usage
 
 See `demo`.
 
@@ -57,3 +57,4 @@ Much of the code has been copied from [voldeloom](https://github.com/CrackedPoli
 * Parchment stuff:
   * param-name mappings
   * javadoc (which requires implementing `genSources`, doing linemapping, etc. voldeloom has mosta that stuff)
+* Hmm: optional mode that tries to use a cached jar from `fabric-loom`, to save RAM 
