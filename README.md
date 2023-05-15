@@ -41,6 +41,13 @@ minivan {
 
 Currently the *only* supported function inside the `minivan` block is `version`, and *no* Gradle tasks are added.
 
+Important note for IntelliJ users:
+
+* Right click on any project or task in the Gradle Tool Window and select "Tasks Activation". There is surely an easier way to get to this dialog but I can't find it.
+* Remove all task activations that refer to running a `:prepareWorkspace` task after syncing.
+  * This will probably be "all of them".
+  * `minivan` does not add this task, so IntelliJ sync will fail until this activation is removed.
+
 # things that this plugin glues together
 
 This plugin is like 5% original work by-weight. Most of the heavy lifting is done by:
