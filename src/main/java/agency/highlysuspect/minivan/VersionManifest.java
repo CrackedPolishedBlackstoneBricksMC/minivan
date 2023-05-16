@@ -32,6 +32,18 @@ public class VersionManifest {
 	public String mainClass;
 	public String minecraftArguments;
 	
+	public String getUrl(String type) {
+		Downloads dl = downloads.get(type);
+		
+		if(dl == null) {
+			String message = "No download of type '" + type + "' available in the Minecraft " + id + " version manifest.";
+			if(type.endsWith("_mappings")) message += "\nIt looks like Mojang did not provide official mappings for this version.";
+			throw new IllegalArgumentException(message);
+		}
+		
+		return dl.url;
+	}
+	
 	public static class Downloads {
 		public String url;
 		public String sha1;

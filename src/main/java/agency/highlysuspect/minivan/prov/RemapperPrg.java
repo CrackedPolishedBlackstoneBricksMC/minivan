@@ -35,7 +35,6 @@ public class RemapperPrg extends MiniProvider {
 			TinyRemapper remapper = TinyRemapper.newRemapper()
 				.renameInvalidLocals(true)
 				.rebuildSourceFilenames(true)
-				//glue code between lorenz and tiny-remapper
 				.withMappings(acceptor -> prg.getTopLevelClassMappings().forEach(tlcm -> visitClass(acceptor, tlcm))) 
 				.build();
 			
@@ -51,6 +50,7 @@ public class RemapperPrg extends MiniProvider {
 		return result;
 	}
 	
+	//glue code between lorenz and tiny-remapper
 	private void visitClass(IMappingProvider.MappingAcceptor acceptor, ClassMapping<?, ?> classMapping) {
 		acceptor.acceptClass(classMapping.getFullObfuscatedName(), classMapping.getFullDeobfuscatedName());
 		

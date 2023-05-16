@@ -17,60 +17,55 @@ public class VanillaJarFetcher extends MiniProvider {
 	}
 	
 	private final String version, versionFilenameSafe;
+	public static final String PISTON_META = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 	
 	public Result fetch() throws Exception {
-		Path versionManifestIndexJson = getOrCreate("version_manifest.json", to -> {
+		//TODO same problem as voldeloom, the skipIfNewerThan happens only if the file doesn't exist so it's redundant
+		Path versionManifestIndexJson = getOrCreate("version_manifest_v2.json", to -> {
 			log.lifecycle("Downloading version_manifest.json to {}", to);
-			new DownloadSession(project)
-				.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
-				.dest(to)
-				.etag(true)
-				.gzip(true)
-				.skipIfNewerThan(Period.ofDays(14))
-				.download();
+			new DownloadSession(project).url(PISTON_META).dest(to).etag(true).gzip(true).skipIfNewerThan(Period.ofDays(14)).download();
 		});
 		log.info("version_manifest.json: {}", versionManifestIndexJson);
 		
 		ManifestIndex versionManifestIndex = ManifestIndex.read(versionManifestIndexJson);
 		ManifestIndex.VersionData selectedVersion = versionManifestIndex.versions.get(version);
 		
+		if(selectedVersion == null) {
+			throw new IllegalArgumentException("Could not find Minecraft version " + version + " in " + versionManifestIndexJson);
+		}
+		
 		Path thisVersionManifestJson = getOrCreate("minecraft-" + versionFilenameSafe + "-info.json", to -> {
 			log.lifecycle("Downloading {} manifest to {}", version, to);
-			new DownloadSession(project)
-				.url(selectedVersion.url)
-				.dest(to)
-				.gzip(true)
-				.etag(true)
-				.download();
+			new DownloadSession(project).url(selectedVersion.url).dest(to).etag(true).gzip(true).download();
 		});
 		log.info("{} manifest: {}", version, thisVersionManifestJson);
 		
 		VersionManifest vm = VersionManifest.read(thisVersionManifestJson);
 		
-		Path clientJar = fetch(vm, "client", "client.jar");
-		Path serverJar = fetch(vm, "server", "server.jar");
-		Path clientMap = fetch(vm, "client_mappings", "client-mappings.txt");
-		Path serverMap = fetch(vm, "server_mappings", "server-mappings.txt");
+		//Try to fetch mappings first, just to crash early if there are no official mappings available
+		Path clientMap = getOrCreate("minecraft-" + versionFilenameSafe + "-client-mappings.txt", to -> {
+			log.lifecycle("Downloading client mappings to {}", to);
+			new DownloadSession(project).url(vm.getUrl("client_mappings")).dest(to).etag(true).gzip(true).download();
+		});
+		Path serverMap = getOrCreate("minecraft-" + versionFilenameSafe + "-server-mappings.txt", to -> {
+			log.lifecycle("Downloading server mappings to {}", to);
+			new DownloadSession(project).url(vm.getUrl("server_mappings")).dest(to).etag(true).gzip(true).download();
+		});
+		
+		//We don't gzip minecraft jars in-flight, i've had bizarre issues with it in the past. Sorry
+		Path clientJar = getOrCreate("minecraft-" + versionFilenameSafe + "-client.jar", to -> {
+			log.lifecycle("Downloading client jar to {}", to);
+			new DownloadSession(project).url(vm.getUrl("client")).dest(to).etag(true).gzip(false).download();
+		});
+		Path serverJar = getOrCreate("minecraft-" + versionFilenameSafe + "-server.jar", to -> {
+			log.lifecycle("Downloading server jar to {}", to);
+			new DownloadSession(project).url(vm.getUrl("server")).dest(to).etag(true).gzip(false).download();
+		});
 		
 		log.info("client: {}", clientJar);
 		log.info("server: {}", serverJar);
 		
 		return new Result(clientJar, serverJar, clientMap, serverMap, vm);
-	}
-	
-	private Path fetch(VersionManifest vm, String downloadType, String filenameSuffix) throws Exception {
-		String filename = "minecraft-" + versionFilenameSafe + "-" + filenameSuffix;
-		boolean isJar = filename.endsWith(".jar");
-		
-		return getOrCreate(filename, to -> {
-			log.lifecycle("Downloading {}{} to {}", downloadType, isJar ? " jar" : "", to);
-			new DownloadSession(project)
-				.url(vm.downloads.get(downloadType).url)
-				.dest(to)
-				.etag(true)
-				.gzip(!isJar) //I've had problems with gzipping minecraft jars before
-				.download();
-		});
 	}
 	
 	public static class Result {
@@ -83,7 +78,7 @@ public class VanillaJarFetcher extends MiniProvider {
 		}
 		
 		public final Path client, server;
-		public final Path clientMappings, serverMappings; //TODO: make Nullable (versions without official mappings support?)
+		public final Path clientMappings, serverMappings;
 		public final VersionManifest versionManifest;
 	}
 }

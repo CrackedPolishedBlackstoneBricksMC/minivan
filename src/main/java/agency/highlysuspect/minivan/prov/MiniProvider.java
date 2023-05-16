@@ -1,23 +1,22 @@
 package agency.highlysuspect.minivan.prov;
 
+import agency.highlysuspect.minivan.MinivanExt;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 
 public class MiniProvider {
 	public MiniProvider(Project project) {
 		this.project = project;
+		this.ext = project.getExtensions().getByType(MinivanExt.class);
 		this.log = project.getLogger();
 	}
 	
 	protected final Project project;
+	protected final MinivanExt ext;
 	protected final Logger log;
 	
 	protected Path cacheDir() throws IOException {
@@ -27,8 +26,13 @@ public class MiniProvider {
 	}
 	
 	protected Path getOrCreate(Path p, ThrowyConsumer<Path> creator) throws Exception {
-		if(project.getGradle().getStartParameter().isRefreshDependencies()) Files.deleteIfExists(p);
-		if(Files.notExists(p)) creator.accept(p);
+		if(ext.refreshDependencies) Files.deleteIfExists(p);
+		if(Files.notExists(p)) {
+			creator.accept(p);
+			
+			//double-check that the file really does exist now
+			if(Files.notExists(p)) throw new IllegalStateException("File at " + p + " wasn't created by " + creator);
+		}
 		return p;
 	}
 	

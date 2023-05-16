@@ -12,6 +12,23 @@ buildscript {
 apply plugin: "java"
 apply plugin: "agency.highlysuspect.minivan"
 
+//Put Minecraft onto the `compileOnly` configuration, the easy way:
 minivan {
 	version("1.19.4")
 }
+
+//Or do it the hard way:
+
+//this object is a `agency.highlysuspect.minivan.prov.MinecraftProvider.Result`:
+def mc = minivan.getMinecraft("1.19.2")
+
+//java.nio.Path to the "minecraft, remapped and merged" jar on your computer
+println("merged minecraft jar: ${mc.minecraft}")
+
+//List<String>, maven-style coordinates to Minecraft's dependencies
+//(psst- the plugin automatically adds Mojang's maven and mavenCentral, so these should just work) 
+println("maven dependency count: ${mc.dependencies.size()}")
+
+//let's add this Minecraft to the compileOnly classpath manually:
+project.dependencies.add("compileOnly", project.files(mc.minecraft))
+mc.dependencies.forEach { project.dependencies.add("compileOnly", it) }

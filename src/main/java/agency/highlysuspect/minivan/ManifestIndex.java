@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 @SuppressWarnings("CanBeFinal") //google gson
@@ -19,7 +18,7 @@ public class ManifestIndex {
 		try(BufferedReader reader = Files.newBufferedReader(path)) {
 			ManifestIndex manifestIndex = new Gson().fromJson(reader, ManifestIndex.class);
 			
-			manifestIndex.versionList.forEach(v -> manifestIndex.versions.put(v.id.toLowerCase(Locale.ROOT), v));
+			manifestIndex.versionList.forEach(v -> manifestIndex.versions.put(v.id, v));
 			
 			return manifestIndex;
 		}
