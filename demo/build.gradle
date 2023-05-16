@@ -5,7 +5,7 @@ buildscript {
 		//maven { url "https://repo.sleeping.town/" } //commented out
 	}
 	dependencies {
-		classpath "agency.highlysuspect:minivan:0.1-SNAPSHOT"
+		classpath "agency.highlysuspect:minivan:0.2"
 	}
 }
 

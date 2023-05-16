@@ -22,7 +22,7 @@ buildscript {
 		maven { url "https://repo.sleeping.town/" }
 	}
 	dependencies {
-		classpath "agency.highlysuspect:minivan:0.1"
+		classpath "agency.highlysuspect:minivan:0.2"
 	}
 }
 
@@ -55,7 +55,7 @@ Your (sub)project's `build.gradle`:
 ```gradle
 plugins {
 	id "java"
-	id "agency.highlysuspect.minivan" version "0.1"
+	id "agency.highlysuspect.minivan" version "0.2"
 }
 
 minivan {
@@ -69,7 +69,7 @@ Either of these buildscripts will cause the Minecraft 1.18.2 client and server t
 
 ## Nuts and bolts
 
-Using `version` is optional. For a lower-level imperative experience, try the `minivan.getMinecraft` function instead:
+Using `version` is optional. For a lower-level imperative experience, try the `minivan.getMinecraft` function (available in `0.2`) instead:
 
 ```gradle
 //this object is a `agency.highlysuspect.minivan.prov.MinecraftProvider.Result`:
