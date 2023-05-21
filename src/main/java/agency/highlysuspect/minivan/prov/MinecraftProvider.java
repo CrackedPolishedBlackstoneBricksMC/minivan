@@ -20,7 +20,8 @@ public class MinecraftProvider extends MiniProvider {
 		log.info("getting minecraft {}", version);
 		
 		//Fetch vanilla jars, official mappings, version manifest
-		VanillaJarFetcher.Result vanillaJars = new VanillaJarFetcher(project, version).fetch();
+		VanillaJarFetcher vanillaJarFetcher = new VanillaJarFetcher(project, version);
+		VanillaJarFetcher.Result vanillaJars = vanillaJarFetcher.fetch();
 		
 		//Look for third-party libraries
 		List<String> libs = new ArrayList<>();
@@ -38,11 +39,21 @@ public class MinecraftProvider extends MiniProvider {
 		
 		//Remap client and server using official names
 		String minecraftPrefix = "minecraft-" + MinivanPlugin.filenameSafe(version);
-		Path clientMapped = new RemapperPrg(project, vanillaJars.client, vanillaJars.clientMappings, minecraftPrefix + "-client-mapped.jar").remap();
-		Path serverMapped = new RemapperPrg(project, vanillaJars.server, vanillaJars.serverMappings, minecraftPrefix + "-server-mapped.jar").remap();
+		
+		RemapperPrg clientMapper = new RemapperPrg(project, vanillaJars.client, vanillaJars.clientMappings, minecraftPrefix + "-client-mapped.jar");
+		RemapperPrg serverMapper = new RemapperPrg(project, vanillaJars.server, vanillaJars.serverMappings, minecraftPrefix + "-server-mapped.jar");
+		clientMapper.dependsOn(vanillaJarFetcher);
+		serverMapper.dependsOn(vanillaJarFetcher);
+		
+		Path clientMapped = clientMapper.remap();
+		Path serverMapped = serverMapper.remap();
 		
 		//Merge client and server
-		Path merged = new Merger(project, clientMapped, serverMapped, minecraftPrefix + "-merged.jar").merge();
+		Merger merger = new Merger(project, clientMapped, serverMapped, minecraftPrefix + "-merged.jar");
+		merger.dependsOn(clientMapper);
+		merger.dependsOn(serverMapper);
+		
+		Path merged = merger.merge();
 		
 		return new Result(vanillaJars, merged, libs);
 	}

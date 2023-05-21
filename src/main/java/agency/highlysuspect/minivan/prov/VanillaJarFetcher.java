@@ -13,10 +13,11 @@ public class VanillaJarFetcher extends MiniProvider {
 	public VanillaJarFetcher(Project project, String version) {
 		super(project);
 		this.version = version;
-		this.versionFilenameSafe = MinivanPlugin.filenameSafe(version);
+		this.filenamePrefix = "minecraft-" + MinivanPlugin.filenameSafe(version);
 	}
 	
-	private final String version, versionFilenameSafe;
+	private final String version;
+	private final String filenamePrefix;
 	public static final String PISTON_META = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 	
 	public Result fetch() throws Exception {
@@ -34,7 +35,7 @@ public class VanillaJarFetcher extends MiniProvider {
 			throw new IllegalArgumentException("Could not find Minecraft version " + version + " in " + versionManifestIndexJson);
 		}
 		
-		Path thisVersionManifestJson = getOrCreate("minecraft-" + versionFilenameSafe + "-info.json", to -> {
+		Path thisVersionManifestJson = getOrCreate(filenamePrefix + "-info.json", to -> {
 			log.lifecycle("Downloading {} manifest to {}", version, to);
 			new DownloadSession(project).url(selectedVersion.url).dest(to).etag(true).gzip(true).download();
 		});
@@ -43,21 +44,21 @@ public class VanillaJarFetcher extends MiniProvider {
 		VersionManifest vm = VersionManifest.read(thisVersionManifestJson);
 		
 		//Try to fetch mappings first, just to crash early if there are no official mappings available
-		Path clientMap = getOrCreate("minecraft-" + versionFilenameSafe + "-client-mappings.txt", to -> {
+		Path clientMap = getOrCreate(filenamePrefix + "-client-mappings.txt", to -> {
 			log.lifecycle("Downloading client mappings to {}", to);
 			new DownloadSession(project).url(vm.getUrl("client_mappings")).dest(to).etag(true).gzip(true).download();
 		});
-		Path serverMap = getOrCreate("minecraft-" + versionFilenameSafe + "-server-mappings.txt", to -> {
+		Path serverMap = getOrCreate(filenamePrefix + "-server-mappings.txt", to -> {
 			log.lifecycle("Downloading server mappings to {}", to);
 			new DownloadSession(project).url(vm.getUrl("server_mappings")).dest(to).etag(true).gzip(true).download();
 		});
 		
-		//We don't gzip minecraft jars in-flight, i've had bizarre issues with it in the past. Sorry
-		Path clientJar = getOrCreate("minecraft-" + versionFilenameSafe + "-client.jar", to -> {
+		//Don't gzip minecraft jars in-flight, i've had bizarre issues with it in the past. Sorry
+		Path clientJar = getOrCreate(filenamePrefix + "-client.jar", to -> {
 			log.lifecycle("Downloading client jar to {}", to);
 			new DownloadSession(project).url(vm.getUrl("client")).dest(to).etag(true).gzip(false).download();
 		});
-		Path serverJar = getOrCreate("minecraft-" + versionFilenameSafe + "-server.jar", to -> {
+		Path serverJar = getOrCreate(filenamePrefix + "-server.jar", to -> {
 			log.lifecycle("Downloading server jar to {}", to);
 			new DownloadSession(project).url(vm.getUrl("server")).dest(to).etag(true).gzip(false).download();
 		});

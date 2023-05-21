@@ -1,6 +1,7 @@
 package agency.highlysuspect.minivan;
 
 import agency.highlysuspect.minivan.prov.MinecraftProvider;
+import agency.highlysuspect.minivan.prov.Props;
 import org.gradle.api.Project;
 
 public class MinivanExt {

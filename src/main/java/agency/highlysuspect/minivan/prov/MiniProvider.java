@@ -18,9 +18,23 @@ public class MiniProvider {
 	protected final Project project;
 	protected final MinivanExt ext;
 	protected final Logger log;
+	protected final Props props = new Props();
+	
+	public void dependsOn(Object other) {
+		if(other instanceof Props) props.setAll((Props) other);
+		else if(other instanceof MiniProvider) props.setAll(((MiniProvider) other).props);
+		else throw new IllegalArgumentException(other.getClass().getName());
+	}
+	
+	@SuppressWarnings("DynamicRegexReplaceableByCompiledPattern")
+	protected String subst(String in) {
+		return in.replace("{HASH}", props.suffix());
+	}
 	
 	protected Path cacheDir() throws IOException {
-		Path cacheDir = project.getGradle().getGradleUserHomeDir().toPath().resolve("caches").resolve("minivan-cache");
+		Path cacheDir = props.has("projectmapped") ?
+			project.getProjectDir().toPath().resolve(".gradle").resolve("minivan-cache") : //project-local	
+			project.getGradle().getGradleUserHomeDir().toPath().resolve("caches").resolve("minivan-cache"); //user-local
 		Files.createDirectories(cacheDir);
 		return cacheDir;
 	}

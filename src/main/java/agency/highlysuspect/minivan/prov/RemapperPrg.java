@@ -25,7 +25,7 @@ public class RemapperPrg extends MiniProvider {
 	public final String outJarName;
 	
 	public Path remap() throws Exception {
-		Path result = getOrCreate(outJarName, outJar -> {
+		Path result = getOrCreate(subst(outJarName), outJar -> {
 			log.lifecycle("Remapping {} to {} using {}", inJar, outJar, mapFile);
 			
 			//lorenz

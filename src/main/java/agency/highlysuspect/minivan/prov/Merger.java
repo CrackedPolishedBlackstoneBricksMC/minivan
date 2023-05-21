@@ -25,7 +25,7 @@ public class Merger extends MiniProvider {
 	public final String mergedName;
 	
 	public Path merge() throws Exception {
-		Path p = getOrCreate(mergedName, merged -> {
+		Path p = getOrCreate(subst(mergedName), merged -> {
 			log.lifecycle("Merging {} and {} to {}", client, server, merged);
 			
 			try(
