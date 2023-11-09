@@ -22,7 +22,7 @@ buildscript {
 		maven { url "https://repo.sleeping.town/" }
 	}
 	dependencies {
-		classpath "agency.highlysuspect:minivan:0.2"
+		classpath "agency.highlysuspect:minivan:0.4"
 	}
 }
 
@@ -30,7 +30,7 @@ apply plugin: "java"
 apply plugin: "agency.highlysuspect.minivan"
 
 minivan {
-	version("1.18.2")
+	version("1.20.2")
 }
 ```
 
@@ -55,25 +55,25 @@ Your (sub)project's `build.gradle`:
 ```gradle
 plugins {
 	id "java"
-	id "agency.highlysuspect.minivan" version "0.2"
+	id "agency.highlysuspect.minivan" version "0.4"
 }
 
 minivan {
-	version("1.18.2")
+	version("1.20.2")
 }
 ```
 
 </details>
 
-Either of these buildscripts will cause the Minecraft 1.18.2 client and server to be downloaded, remapped to official names, merged, and stuck onto the `compileOnly` configuration along with all its dependencies (LWJGL, etc). This'll happen in `afterEvaluate`. See `./demo` for a worked example.
+Either of these buildscripts will cause the Minecraft 1.20.2 client and server to be downloaded, remapped to official names, merged, and stuck onto the `compileOnly` configuration along with all its dependencies (LWJGL, etc). This'll happen in `afterEvaluate`. See `./demo` for a worked example.
 
 ## Nuts and bolts
 
-Using `version` is optional. For a lower-level imperative experience, try the `minivan.getMinecraft` function (available in `0.2`) instead:
+Using `version` is optional. For a lower-level imperative experience, try the `minivan.getMinecraft` function (available since `0.2`) instead:
 
 ```gradle
 //this object is a `agency.highlysuspect.minivan.prov.MinecraftProvider.Result`:
-def mc = minivan.getMinecraft("1.19.4")
+def mc = minivan.getMinecraft("1.20.2")
 
 //java.nio.Path to the "minecraft, remapped and merged" jar on your computer
 println("merged minecraft jar: ${mc.minecraft}")

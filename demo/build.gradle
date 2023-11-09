@@ -5,7 +5,7 @@ buildscript {
 		//maven { url "https://repo.sleeping.town/" } //commented out
 	}
 	dependencies {
-		classpath "agency.highlysuspect:minivan:0.2"
+		classpath "agency.highlysuspect:minivan:0.4"
 	}
 }
 
@@ -14,7 +14,7 @@ apply plugin: "agency.highlysuspect.minivan"
 
 //Put Minecraft onto the `compileOnly` configuration, the easy way:
 minivan {
-	version("1.19.4")
+	version("1.20.2")
 }
 
 //Or do it the hard way:
